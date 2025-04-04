@@ -1,6 +1,6 @@
 # CountDownTimer: A Two-Player Game Timer App
 
-CountDownTimer is a modern iOS application built with SwiftUI, providing a seamless experience for managing time in turn-based games across iOS devices.
+CountDownTimer is a modern iOS application built with SwiftUI, providing a seamless experience for managing time in turn-based games.
 
 ## Features
 
