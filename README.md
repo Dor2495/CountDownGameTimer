@@ -10,7 +10,7 @@ CountDownTimer is a modern iOS application built with SwiftUI, providing a seaml
 - **Customizable Game Length**: Configure the game duration in minutes through the settings.
 - **Visually Appealing UI**: Modern and intuitive user interface designed with SwiftUI.
 
-![Alt Text](images/example_video.mp4)
+![Alt Text](images/first_screen.png)
 
 ## Technologies Used
 
