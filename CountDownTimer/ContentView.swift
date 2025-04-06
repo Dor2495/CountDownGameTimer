@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @Environment(\.dismiss) private var dismiss
+    @State private var gameSettings = ThemeViewModel()
     @State private var game = Game(
         gameLenght: 60,
         playerOneTimer: TimerObject(),
@@ -17,13 +17,13 @@ struct ContentView: View {
     @State private var showSettings: Bool = false
     
     var body: some View {
-        let playerOneTimerDisplay =  String(
-            format: "%02d:%02d",
-            game.playerOneTimer!.remainingTime / 60, game.playerOneTimer!.remainingTime % 60
+        let playerOneTimerDisplay = String(format: "%02d:%02d", 
+            game.playerOneTimer!.remainingTime / 60, 
+            game.playerOneTimer!.remainingTime % 60
         )
-        let playerTwoTimerDisplay =  String(
-            format: "%02d:%02d",
-            game.playerTwoTimer!.remainingTime / 60, game.playerTwoTimer!.remainingTime % 60
+        let playerTwoTimerDisplay = String(format: "%02d:%02d", 
+            game.playerTwoTimer!.remainingTime / 60, 
+            game.playerTwoTimer!.remainingTime % 60
         )
         
         NavigationStack {
@@ -34,9 +34,11 @@ struct ContentView: View {
                     TimerView(
                         gameTime: $game.gameLenght,
                         showSettings: $showSettings,
+                        colorTheme: gameSettings.color,
                         gameStatus: .newGame,
                         playerOneTimerDisplay: playerOneTimerDisplay,
-                        playerTwoTimerDisplay: playerTwoTimerDisplay) {
+                        playerTwoTimerDisplay: playerTwoTimerDisplay
+                    ) {
                             game.resetTimers()
                             game.status = .newGame
                             return game.status
@@ -60,7 +62,7 @@ struct ContentView: View {
                 }
             }
             .sheet(isPresented: $showSettings) {
-                SettingsView(game: game)
+                SettingsView(game: game, gameSettings: gameSettings)
             }
         }
     }

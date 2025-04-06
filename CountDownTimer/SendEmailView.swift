@@ -14,7 +14,7 @@ struct SendEmailView: View {
     @State private var bodyContent: String = ""
     
     var body: some View {
-        VStack (alignment: .leading){
+        VStack(alignment: .leading) {
             Form {
                 TextField("To:", text: $to)
                 
@@ -22,6 +22,15 @@ struct SendEmailView: View {
                 
                 TextEditor(text: $bodyContent)
                     .frame(minHeight: 100)
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    // Email sending logic will go here
+                } label: {
+                    Image(systemName: "paperplane.circle.fill")
+                }
             }
         }
     }

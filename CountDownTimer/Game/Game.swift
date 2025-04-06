@@ -32,7 +32,6 @@ class Game {
     
     func startGame() {
         status = .on
-        
     }
     
     func pauseGame() {
@@ -53,7 +52,6 @@ class Game {
         status = .newGame
         playerOneTimer?.resetTimer()
         playerTwoTimer?.resetTimer()
-        
     }
     
     func getPlayerByTurn(playerTurn: Turn) -> TimerObject {

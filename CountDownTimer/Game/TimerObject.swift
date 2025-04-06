@@ -10,36 +10,23 @@ import SwiftUI
 
 @Observable
 class TimerObject {
-    // specify color?
     var color: Color?
-    
     var totalGameLength: Int = 0
-    // lenght
     var length: Int?
-    
-    // init
-    init(color: Color? = nil, length: Int? = nil) {
-        self.color = color
-        self.length = 300
-    }
     var gameStatus: Status = .newGame
-    
     var isTimerRunning: Bool = false
-    
-    // timeElapsed - how match time timer counted
     var timeElapsed = 0
+    var timer: Timer? = nil
     
-    // time remaining = lengh - timeElapsed
     var remainingTime: Int {
         length! - timeElapsed
     }
     
-    // Timer instance?
-    var timer: Timer? = nil
-    // user the timer to set intervals and increase timeElapsed
+    init(color: Color? = nil, length: Int? = nil) {
+        self.color = color
+        self.length = 300
+    }
     
-    
-    // startTimer
     func startTimer() {
         isTimerRunning = true
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) {[self] _ in
@@ -51,7 +38,6 @@ class TimerObject {
         }
     }
     
-    // stopTimer
     func stopTimer() {
         if isTimerRunning {
             isTimerRunning = false
@@ -59,7 +45,6 @@ class TimerObject {
         }
     }
     
-    // resetTimer
     func resetTimer() {
         timeElapsed = 0
         isTimerRunning = false
@@ -71,6 +56,6 @@ class TimerObject {
     // }
     
     var displayTimeRemaining: String {
-        return String(format: "%02d:%02d", remainingTime / 60, remainingTime % 60)
+        String(format: "%02d:%02d", remainingTime / 60, remainingTime % 60)
     }
 }

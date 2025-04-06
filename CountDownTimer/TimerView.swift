@@ -11,21 +11,22 @@ import AVFoundation
 struct TimerView: View {
     @Binding var gameTime: Int
     @Binding var showSettings: Bool
+    var colorTheme: Color
     
     @State private var currentTurn: Turn = .playerOne
     @State private var gameStatus: Status?
-                   var passTurnTo: ((Turn, Turn?) -> Void)?
-                   var resumeGame: (() -> Status)?
-                   var restartGame: (() -> Status)?
-                   var pauseGame: (() -> Status)?
+    var passTurnTo: ((Turn, Turn?) -> Void)?
+    var resumeGame: (() -> Status)?
+    var restartGame: (() -> Status)?
+    var pauseGame: (() -> Status)?
     
     @State private var audioPlayer: AVPlayer?
     
     var playerOneTimerDisplay: String
     var playerTwoTimerDisplay: String
     
-    init(gameTime: Binding<Int>, showSettings: Binding<Bool>, gameStatus: Status, playerOneTimerDisplay: String, playerTwoTimerDisplay: String, restartGame: (() -> Status)? = nil, resumeGame: (() -> Status)? = nil, pauseGame: (() -> Status)? = nil,  passTurnTo: ((Turn, Turn?) -> Void)? = nil) {
-        print("init")
+    init(gameTime: Binding<Int>, showSettings: Binding<Bool>, colorTheme: Color = .blue, gameStatus: Status, playerOneTimerDisplay: String, playerTwoTimerDisplay: String, restartGame: (() -> Status)? = nil, resumeGame: (() -> Status)? = nil, pauseGame: (() -> Status)? = nil, passTurnTo: ((Turn, Turn?) -> Void)? = nil) {
+        self.colorTheme = colorTheme
         self.gameStatus = gameStatus
         self.playerOneTimerDisplay = playerOneTimerDisplay
         self.playerTwoTimerDisplay = playerTwoTimerDisplay
@@ -38,100 +39,104 @@ struct TimerView: View {
         self._gameTime = gameTime
     }
     
-    
     var body: some View {
-        ZStack {
-            // Full screen background
-            Color.black
-                .ignoresSafeArea()
-            
-            HStack(spacing: 0) {
-                // MARK: player 1 side (left side)
-                Button {
-                    print("(Turn) -> Void")
-                    passTurnTo!(.playerOne, .playerTwo)
-                    passTurn(to: .playerTwo)
-                    tapSound()
-                    print("\(currentTurn) turn")
-                } label: {
-                    Text("\(playerOneTimerDisplay)")
-                        .font(.system(size: 40, weight: .bold, design: .monospaced))
-                        .foregroundColor(Color.blue)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(
-                            RoundedRectangle(cornerRadius: 10)
-                                .fill(Color.black)
-                                .shadow(color: Color.blue.opacity(0.7), radius: 10)
-                        )
-                }
-                .frame(width: UIScreen.main.bounds.width * 0.3, height: UIScreen.main.bounds.height * 0.6)
-                .scaleEffect(currentTurn == .playerOne ? 1 : 0.8)
-                .disabled(currentTurn != .playerOne || gameStatus == .paused)
+        GeometryReader { geometry in
+            ZStack {
+                Color.black
+                    .ignoresSafeArea()
                 
-                // MARK: Controls
-                VStack(spacing: 15) {
-                    let minutes = (gameTime) / 60
-                    let seconds = (gameTime) % 60
-                    let gameTimeFormatted = String(format: "%02d : %02d", minutes, seconds)
+                HStack(spacing: 0) {
+                    // Dynamically calculate width to ensure proper fitting
+                    let availableWidth = geometry.size.width
+                    let playerButtonWidth = availableWidth * 0.38 // Slightly reduced from 0.4
+                    let controlsWidth = availableWidth * 0.22 // Slightly increased from 0.2
+                    let buttonHeight = min(geometry.size.height * 0.6, geometry.size.width * 0.7)
                     
-                    Text("\(gameTimeFormatted)")
-                        .font(.title)
-                        .bold()
-                        .foregroundColor(Color.blue)
-                        .shadow(color: .black, radius: 5)
-                        .padding(.bottom, 10)
-                    
-                    DigitalButton(icon: gameStatus == .paused ? "forward.fill" : "play.fill") {
-                        print("(Turn) -> Void")
-                        print("Start pressed")
-                        gameStatus = resumeGame!()
+                    // Player 1 Timer Button
+                    PlayerTimerButton(
+                        display: playerOneTimerDisplay,
+                        color: colorTheme,
+                        isActive: currentTurn == .playerOne,
+                        isDisabled: currentTurn != .playerOne || gameStatus == .paused
+                    ) {
+                        passTurnTo!(.playerOne, .playerTwo)
+                        passTurn(to: .playerTwo)
+                        tapSound()
                     }
-                    .disabled(gameStatus == .on)
+                    .frame(width: playerButtonWidth, height: buttonHeight)
                     
-                    DigitalButton(icon: "arrow.clockwise") {
-                        print("(Turn) -> Void")
-                        print("Restart pressed")
-                        gameStatus = restartGame!()
-                    }
-                    .disabled(gameStatus == .newGame || gameStatus == .on)
+                    Spacer(minLength: 2)
                     
-                    DigitalButton(icon: "pause.fill") {
-                        print("() -> Void")
-                        print("Pause pressed")
-                        gameStatus = pauseGame!()
+                    // Controls Section
+                    VStack(spacing: geometry.size.height * 0.04) {
+                        let minutes = (gameTime) / 60
+                        let seconds = (gameTime) % 60
+                        let gameTimeFormatted = String(format: "%02d : %02d", minutes, seconds)
+                        
+                        Text("\(gameTimeFormatted)")
+                            .font(.system(size: min(geometry.size.width * 0.05, 30)))
+                            .bold()
+                            .foregroundColor(colorTheme)
+                            .shadow(color: .black, radius: 5)
+                            .padding(.bottom, geometry.size.height * 0.02)
+                        
+                        ControlButton(
+                            icon: gameStatus == .paused ? "forward.fill" : "play.fill",
+                            size: min(controlsWidth * 0.3, 30),
+                            color: colorTheme
+                        ) {
+                            gameStatus = resumeGame!()
+                        }
+                        .disabled(gameStatus == .on)
+                        
+                        ControlButton(
+                            icon: "arrow.clockwise",
+                            size: min(controlsWidth * 0.3, 30),
+                            color: colorTheme
+                        ) {
+                            gameStatus = restartGame!()
+                        }
+                        .disabled(gameStatus == .newGame || gameStatus == .on)
+                        
+                        ControlButton(
+                            icon: "pause.fill",
+                            size: min(controlsWidth * 0.3, 30),
+                            color: colorTheme
+                        ) {
+                            gameStatus = pauseGame!()
+                        }
+                        .disabled(gameStatus == .paused || gameStatus == .newGame)
+                        
+                        ControlButton(
+                            icon: "gear",
+                            size: min(controlsWidth * 0.3, 30),
+                            color: colorTheme
+                        ) {
+                            showSettings = true
+                        }
+                        .disabled(gameStatus == .on)
                     }
-                    .disabled(gameStatus == .paused || gameStatus == .newGame)
+                    .frame(width: controlsWidth)
+                    .padding(.vertical, geometry.size.height * 0.05)
                     
-                    DigitalButton(icon: "gear") {
-                        showSettings = true
+                    Spacer(minLength: 2)
+                    
+                    // Player 2 Timer Button
+                    PlayerTimerButton(
+                        display: playerTwoTimerDisplay,
+                        color: colorTheme,
+                        isActive: currentTurn == .playerTwo,
+                        isDisabled: currentTurn != .playerTwo || gameStatus == .paused
+                    ) {
+                        passTurnTo!(.playerTwo, .playerOne)
+                        passTurn(to: .playerOne)
+                        tapSound()
                     }
-                    .disabled(gameStatus == .on)
+                    .frame(width: playerButtonWidth, height: buttonHeight)
                 }
-                .frame(width: UIScreen.main.bounds.width * 0.3)
-                .padding(.vertical, 20)
-                
-                // MARK: player 2 side (right side)
-                Button {
-                    print("(Turn) -> Void")
-                    passTurnTo!(.playerTwo, .playerOne)
-                    passTurn(to: .playerOne)
-                    tapSound()
-                    print("\(currentTurn) turn")
-                } label: {
-                    Text("\(playerTwoTimerDisplay)")
-                        .font(.system(size: 40, weight: .bold, design: .monospaced))
-                        .foregroundColor(Color.blue)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(
-                            RoundedRectangle(cornerRadius: 10)
-                                .fill(Color.black)
-                                .shadow(color: Color.blue.opacity(0.7), radius: 10)
-                        )
-                }.frame(width: UIScreen.main.bounds.width * 0.3, height: UIScreen.main.bounds.height * 0.6)
-                .scaleEffect(currentTurn == .playerTwo ? 1 : 0.8)
-                .disabled(currentTurn != .playerTwo || gameStatus == .paused)
+                .padding(.horizontal, 4)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
     
@@ -146,42 +151,17 @@ struct TimerView: View {
             let url = URL(fileURLWithPath: path)
             audioPlayer = AVPlayer(url: url)
             audioPlayer?.play()
-            print("Sound played")
-        } else {
-            print("Sound file not found")
         }
-    }
-}
-
-struct DigitalButton: View {
-    var icon: String
-    var action: () -> Void
-    
-    var body: some View {
-        Button(action: action) {
-            Image(systemName: icon)
-                .resizable()
-                .scaledToFit()
-                .frame(width: 30, height: 30)
-                .foregroundColor(Color.blue)
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 10)
-                        .fill(Color.black)
-                        .shadow(color: Color.blue.opacity(0.7), radius: 10)
-                )
-        }
-        .buttonStyle(PlainButtonStyle())
     }
 }
 
 #Preview {
-    @Previewable @State var settings = false
-    @Previewable @State var gameTime = 60
-//    TimerView(gameTime: $gameTime, showSettings: $settings, gameStatus: .newGame, playerOneTimerDisplay: "20:20", playerTwoTimerDisplay: "20:20")
-    DigitalButton(icon: "play") {
-        //
-    }
-    .frame(width: 70)
+    TimerView(
+        gameTime: .constant(60),
+        showSettings: .constant(false),
+        gameStatus: .newGame,
+        playerOneTimerDisplay: "20:20",
+        playerTwoTimerDisplay: "20:20"
+    )
 }
 
