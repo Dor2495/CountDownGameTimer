@@ -15,13 +15,14 @@ class TimerObject {
     
     var totalGameLength: Int = 0
     // lenght
-    var length: Int
+    var length: Int?
     
     // init
-    init(color: Color? = nil, lenght: Int) {
+    init(color: Color? = nil, length: Int? = nil) {
         self.color = color
-        self.length = lenght
+        self.length = 300
     }
+    var gameStatus: Status = .newGame
     
     var isTimerRunning: Bool = false
     
@@ -30,7 +31,7 @@ class TimerObject {
     
     // time remaining = lengh - timeElapsed
     var remainingTime: Int {
-        length - timeElapsed
+        length! - timeElapsed
     }
     
     // Timer instance?
@@ -65,24 +66,9 @@ class TimerObject {
     }
     
     // progress = (lenght - timeRemaining) / lenght
-    var progress: CGFloat {
-        CGFloat(length - remainingTime) / CGFloat(length)
-    }
-    
-    var playButtonDisabled: Bool {
-        guard remainingTime > 0, !isTimerRunning else { return true}
-        return false
-    }
-    
-    var pauseButtonDisabled: Bool {
-        guard remainingTime > 0, isTimerRunning else { return true }
-        return false
-    }
-    
-    var resetButtonDisabled: Bool {
-        guard remainingTime != length, !isTimerRunning else { return true }
-        return false
-    }
+    // var progress: CGFloat {
+    //     CGFloat(length! - remainingTime) / CGFloat(length!)
+    // }
     
     var displayTimeRemaining: String {
         return String(format: "%02d:%02d", remainingTime / 60, remainingTime % 60)
