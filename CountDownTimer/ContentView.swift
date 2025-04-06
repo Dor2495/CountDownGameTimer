@@ -35,7 +35,7 @@ struct ContentView: View {
                         gameTime: $game.gameLenght,
                         showSettings: $showSettings,
                         colorTheme: gameSettings.color,
-                        gameStatus: .newGame,
+                        gameStatus: $game.status,
                         playerOneTimerDisplay: playerOneTimerDisplay,
                         playerTwoTimerDisplay: playerTwoTimerDisplay
                     ) {

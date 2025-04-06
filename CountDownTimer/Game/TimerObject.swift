@@ -10,7 +10,6 @@ import SwiftUI
 
 @Observable
 class TimerObject {
-    var color: Color?
     var totalGameLength: Int = 0
     var length: Int?
     var gameStatus: Status = .newGame
@@ -22,8 +21,7 @@ class TimerObject {
         length! - timeElapsed
     }
     
-    init(color: Color? = nil, length: Int? = nil) {
-        self.color = color
+    init(length: Int? = nil) {
         self.length = 300
     }
     

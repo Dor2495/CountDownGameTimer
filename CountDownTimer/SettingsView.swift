@@ -12,7 +12,7 @@ struct SettingsView: View {
     var game: Game
     var gameSettings: ThemeViewModel
     
-    @State private var minutes: [Int] = Array(1...60)
+    @State private var minutes: [Int] = Array(0...60)
     @State private var seconds: [Int] = Array(0...59)
     
     @State private var selectedMinute: Int = 1

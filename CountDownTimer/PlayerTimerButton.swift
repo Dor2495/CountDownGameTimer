@@ -14,13 +14,17 @@ struct PlayerTimerButton: View {
     let isDisabled: Bool
     let action: () -> Void
     
+    var timeColorToDisplay: Color {
+        display == "00:00" ? .red : color
+    }
+    
     var body: some View {
         Button(action: action) {
             Text(display)
                 .font(.system(size: 40, weight: .bold, design: .monospaced))
                 .minimumScaleFactor(0.4) // Lower minimum scale factor to ensure text fits
                 .lineLimit(1)
-                .foregroundColor(color)
+                .foregroundColor(timeColorToDisplay)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .background(
                     RoundedRectangle(cornerRadius: 10)

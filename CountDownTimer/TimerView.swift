@@ -11,10 +11,10 @@ import AVFoundation
 struct TimerView: View {
     @Binding var gameTime: Int
     @Binding var showSettings: Bool
+    @Binding private var gameStatus: Status
     var colorTheme: Color
     
     @State private var currentTurn: Turn = .playerOne
-    @State private var gameStatus: Status?
     var passTurnTo: ((Turn, Turn?) -> Void)?
     var resumeGame: (() -> Status)?
     var restartGame: (() -> Status)?
@@ -25,9 +25,9 @@ struct TimerView: View {
     var playerOneTimerDisplay: String
     var playerTwoTimerDisplay: String
     
-    init(gameTime: Binding<Int>, showSettings: Binding<Bool>, colorTheme: Color = .blue, gameStatus: Status, playerOneTimerDisplay: String, playerTwoTimerDisplay: String, restartGame: (() -> Status)? = nil, resumeGame: (() -> Status)? = nil, pauseGame: (() -> Status)? = nil, passTurnTo: ((Turn, Turn?) -> Void)? = nil) {
+    init(gameTime: Binding<Int>, showSettings: Binding<Bool>, colorTheme: Color = .blue, gameStatus: Binding<Status>, playerOneTimerDisplay: String, playerTwoTimerDisplay: String, restartGame: (() -> Status)? = nil, resumeGame: (() -> Status)? = nil, pauseGame: (() -> Status)? = nil, passTurnTo: ((Turn, Turn?) -> Void)? = nil) {
         self.colorTheme = colorTheme
-        self.gameStatus = gameStatus
+        self._gameStatus = gameStatus
         self.playerOneTimerDisplay = playerOneTimerDisplay
         self.playerTwoTimerDisplay = playerTwoTimerDisplay
         self.pauseGame = pauseGame
@@ -59,9 +59,13 @@ struct TimerView: View {
                         isActive: currentTurn == .playerOne,
                         isDisabled: currentTurn != .playerOne || gameStatus == .paused
                     ) {
+                        tapSound()
                         passTurnTo!(.playerOne, .playerTwo)
                         passTurn(to: .playerTwo)
-                        tapSound()
+                        if playerOneTimerDisplay == "00:00" {
+                            gameStatus = .newGame
+                        }
+                        
                     }
                     .frame(width: playerButtonWidth, height: buttonHeight)
                     
@@ -128,9 +132,12 @@ struct TimerView: View {
                         isActive: currentTurn == .playerTwo,
                         isDisabled: currentTurn != .playerTwo || gameStatus == .paused
                     ) {
+                        tapSound()
                         passTurnTo!(.playerTwo, .playerOne)
                         passTurn(to: .playerOne)
-                        tapSound()
+                        if playerTwoTimerDisplay == "00:00" {
+                            gameStatus = .newGame
+                        }
                     }
                     .frame(width: playerButtonWidth, height: buttonHeight)
                 }
@@ -156,10 +163,11 @@ struct TimerView: View {
 }
 
 #Preview {
+    @Previewable @State var status = Status.newGame
     TimerView(
         gameTime: .constant(60),
         showSettings: .constant(false),
-        gameStatus: .newGame,
+        gameStatus: $status,
         playerOneTimerDisplay: "20:20",
         playerTwoTimerDisplay: "20:20"
     )
