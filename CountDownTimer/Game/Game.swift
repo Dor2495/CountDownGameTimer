@@ -10,24 +10,22 @@ import Foundation
 @Observable
 class Game {
     
-    var gameLenght: Int // in minutes
+    var gameLength: Int // in minutes
     
-    let playerOneTimer: TimerObject?
-    let playerTwoTimer: TimerObject?
+    let playerOneTimer: TimerObject
+    let playerTwoTimer: TimerObject
     
     var status: Status = .newGame
     var playerTurn: Turn = .playerOne
     
     init(
-        gameLenght: Int,
+        gameLength: Int,
         playerOneTimer: TimerObject? = nil,
         playerTwoTimer: TimerObject? = nil
     ) {
-        self.gameLenght = gameLenght
-        self.playerOneTimer = playerOneTimer
-        self.playerTwoTimer = playerTwoTimer
-        playerOneTimer?.length = gameLenght
-        playerTwoTimer?.length = gameLenght
+        self.gameLength = gameLength
+        self.playerOneTimer = playerOneTimer ?? TimerObject(length: gameLength)
+        self.playerTwoTimer = playerTwoTimer ?? TimerObject(length: gameLength)
     }
     
     func startGame() {
@@ -37,8 +35,8 @@ class Game {
     func pauseGame() {
         // MARK: onPauseGame
         status = .paused
-        playerOneTimer?.stopTimer()
-        playerTwoTimer?.stopTimer()
+        playerOneTimer.stopTimer()
+        playerTwoTimer.stopTimer()
     }
     
     func resumeGame() {
@@ -50,18 +48,18 @@ class Game {
     
     func resetTimers() {
         status = .newGame
-        playerOneTimer?.resetTimer()
-        playerTwoTimer?.resetTimer()
+        playerOneTimer.resetTimer()
+        playerTwoTimer.resetTimer()
     }
     
     func getPlayerByTurn(playerTurn: Turn) -> TimerObject {
         switch playerTurn {
         case .playerOne:
-            return playerOneTimer!
+            return playerOneTimer
         case .playerTwo:
-            return playerTwoTimer!
+            return playerTwoTimer
         default:
-            return TimerObject(length: gameLenght)
+            return TimerObject(length: gameLength)
         }
     }
     

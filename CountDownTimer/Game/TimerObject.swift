@@ -10,42 +10,44 @@ import SwiftUI
 
 @Observable
 class TimerObject {
-    var totalGameLength: Int = 0
-    var length: Int?
+    var length: Int
     var gameStatus: Status = .newGame
     var isTimerRunning: Bool = false
     var timeElapsed = 0
     var timer: Timer? = nil
     
     var remainingTime: Int {
-        length! - timeElapsed
+        length - timeElapsed
     }
     
-    init(length: Int? = nil) {
-        self.length = 300
+    init(length: Int = 300) {
+        self.length = length
     }
     
     func startTimer() {
         isTimerRunning = true
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) {[self] _ in
-            if remainingTime > 0 {
-                timeElapsed += 1
+        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            guard let self = self else { return }
+            if self.remainingTime > 0 {
+                self.timeElapsed += 1
             } else {
-                stopTimer()
+                self.stopTimer()
             }
         }
+        RunLoop.main.add(timer!, forMode: .common)
     }
     
     func stopTimer() {
         if isTimerRunning {
             isTimerRunning = false
             timer?.invalidate()
+            timer = nil
         }
     }
     
     func resetTimer() {
+        stopTimer()
         timeElapsed = 0
-        isTimerRunning = false
     }
     
     // progress = (lenght - timeRemaining) / lenght

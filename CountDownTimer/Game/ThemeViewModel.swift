@@ -11,14 +11,40 @@ import SwiftUI
 @Observable
 class ThemeViewModel {
     
-    var color: Color = .blue
+    var playerOneTimeColor: Color = .blue
+    var playerTwoTimeColor: Color = .blue
+    var buttonsColor: Color = .blue
+    var gameTimeColor: Color = .blue
     
-    init(color: Color = .blue) {
-        self.color = color
+    var expendColorSettings: Bool
+    
+    init(
+        playerOneTimeColor: Color = .blue,
+        playerTwoTimeColor: Color = .blue,
+        buttonsColor: Color = .white,
+        gameTimeColor: Color = .white,
+        expendColorSettings: Bool = true
+    ) {
+        self.playerOneTimeColor = playerOneTimeColor
+        self.playerTwoTimeColor = playerTwoTimeColor
+        self.buttonsColor = buttonsColor
+        self.gameTimeColor = gameTimeColor
+        self.expendColorSettings = expendColorSettings
     }
     
-    func setColor(_ color: Color) {
-        self.color = color
+    func setPlayerOneTimeColor(_ color: Color) {
+        self.playerOneTimeColor = color
     }
     
+    func setPlayerTwoTimeColor(_ color: Color) {
+        self.playerTwoTimeColor = color
+    }
+    
+    func setButtonsColor(_ color: Color) {
+        self.buttonsColor = color
+    }
+    
+    func setGameTimeColor(_ color: Color) {
+        self.gameTimeColor = color
+    }
 }

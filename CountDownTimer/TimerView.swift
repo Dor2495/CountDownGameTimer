@@ -12,7 +12,7 @@ struct TimerView: View {
     @Binding var gameTime: Int
     @Binding var showSettings: Bool
     @Binding private var gameStatus: Status
-    var colorTheme: Color
+    var gameSettings: ThemeViewModel
     
     @State private var currentTurn: Turn = .playerOne
     var passTurnTo: ((Turn, Turn?) -> Void)?
@@ -25,8 +25,8 @@ struct TimerView: View {
     var playerOneTimerDisplay: String
     var playerTwoTimerDisplay: String
     
-    init(gameTime: Binding<Int>, showSettings: Binding<Bool>, colorTheme: Color = .blue, gameStatus: Binding<Status>, playerOneTimerDisplay: String, playerTwoTimerDisplay: String, restartGame: (() -> Status)? = nil, resumeGame: (() -> Status)? = nil, pauseGame: (() -> Status)? = nil, passTurnTo: ((Turn, Turn?) -> Void)? = nil) {
-        self.colorTheme = colorTheme
+    init(gameTime: Binding<Int>, showSettings: Binding<Bool>, gameSettings: ThemeViewModel, gameStatus: Binding<Status>, playerOneTimerDisplay: String, playerTwoTimerDisplay: String, restartGame: (() -> Status)? = nil, resumeGame: (() -> Status)? = nil, pauseGame: (() -> Status)? = nil, passTurnTo: ((Turn, Turn?) -> Void)? = nil) {
+        self.gameSettings = gameSettings
         self._gameStatus = gameStatus
         self.playerOneTimerDisplay = playerOneTimerDisplay
         self.playerTwoTimerDisplay = playerTwoTimerDisplay
@@ -55,7 +55,7 @@ struct TimerView: View {
                     // Player 1 Timer Button
                     PlayerTimerButton(
                         display: playerOneTimerDisplay,
-                        color: colorTheme,
+                        color: gameSettings.playerOneTimeColor,
                         isActive: currentTurn == .playerOne,
                         isDisabled: currentTurn != .playerOne || gameStatus == .paused
                     ) {
@@ -80,14 +80,14 @@ struct TimerView: View {
                         Text("\(gameTimeFormatted)")
                             .font(.system(size: min(geometry.size.width * 0.05, 30)))
                             .bold()
-                            .foregroundColor(colorTheme)
+                            .foregroundColor(gameSettings.gameTimeColor)
                             .shadow(color: .black, radius: 5)
                             .padding(.bottom, geometry.size.height * 0.02)
                         
                         ControlButton(
                             icon: gameStatus == .paused ? "forward.fill" : "play.fill",
                             size: min(controlsWidth * 0.3, 30),
-                            color: colorTheme
+                            color: gameSettings.buttonsColor
                         ) {
                             gameStatus = resumeGame!()
                         }
@@ -96,7 +96,7 @@ struct TimerView: View {
                         ControlButton(
                             icon: "arrow.clockwise",
                             size: min(controlsWidth * 0.3, 30),
-                            color: colorTheme
+                            color: gameSettings.buttonsColor
                         ) {
                             gameStatus = restartGame!()
                         }
@@ -105,7 +105,7 @@ struct TimerView: View {
                         ControlButton(
                             icon: "pause.fill",
                             size: min(controlsWidth * 0.3, 30),
-                            color: colorTheme
+                            color: gameSettings.buttonsColor
                         ) {
                             gameStatus = pauseGame!()
                         }
@@ -114,7 +114,7 @@ struct TimerView: View {
                         ControlButton(
                             icon: "gear",
                             size: min(controlsWidth * 0.3, 30),
-                            color: colorTheme
+                            color: gameSettings.buttonsColor
                         ) {
                             showSettings = true
                         }
@@ -128,7 +128,7 @@ struct TimerView: View {
                     // Player 2 Timer Button
                     PlayerTimerButton(
                         display: playerTwoTimerDisplay,
-                        color: colorTheme,
+                        color: gameSettings.playerTwoTimeColor,
                         isActive: currentTurn == .playerTwo,
                         isDisabled: currentTurn != .playerTwo || gameStatus == .paused
                     ) {
@@ -166,7 +166,7 @@ struct TimerView: View {
     @Previewable @State var status = Status.newGame
     TimerView(
         gameTime: .constant(60),
-        showSettings: .constant(false),
+        showSettings: .constant(false), gameSettings: ThemeViewModel(),
         gameStatus: $status,
         playerOneTimerDisplay: "20:20",
         playerTwoTimerDisplay: "20:20"

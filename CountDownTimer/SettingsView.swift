@@ -18,8 +18,15 @@ struct SettingsView: View {
     @State private var selectedMinute: Int = 1
     @State private var selectedsecond: Int = 0
     
+    @State private var playerOneTimeColor: Color = .blue
+    @State private var playerTwoTimeColor: Color = .blue
+    
+    @State private var gameTimeColor: Color = .blue
+    
+    @State private var buttonsColor: Color = .blue
+    
+    
     @State private var sendEmail: Bool = false
-    @State private var selectedColor: Color = .blue
     
     var body: some View {
         NavigationStack {
@@ -29,38 +36,75 @@ struct SettingsView: View {
                 
                 VStack {
                     List {
-                        HStack {
-                            Text("Set Game Time:")
-                            Spacer()
-                            Picker(selection: $selectedMinute) {
-                                ForEach(minutes, id: \.hashValue) { minute in
-                                    Text("\(minute)").tag(minute)
+                        // MARK: Time Set
+                        Section {
+                            HStack {
+                                Spacer()
+                                Picker(selection: $selectedMinute) {
+                                    ForEach(minutes, id: \.hashValue) { minute in
+                                        Text("\(minute)").tag(minute)
+                                    }
+                                } label: {
+                                    Text("Pick a minute")
                                 }
-                            } label: {
-                                Text("Pick a minute")
-                            }
-                            .pickerStyle(WheelPickerStyle())
-                            .frame(width: 70, height: 100)
-                            
-                            Text(":")
-                                .padding()
+                                .pickerStyle(WheelPickerStyle())
+                                .frame(width: 70, height: 100)
                                 
-                            Picker(selection: $selectedsecond) {
-                                ForEach(seconds, id: \.hashValue) { second in
-                                    Text("\(second)").tag(second)
+                                Text(":")
+                                    .padding()
+                                    
+                                Picker(selection: $selectedsecond) {
+                                    ForEach(seconds, id: \.hashValue) { second in
+                                        Text("\(second)").tag(second)
+                                    }
+                                } label: {
+                                    Text("Select seconds")
                                 }
-                            } label: {
-                                Text("Select seconds")
+                                .pickerStyle(WheelPickerStyle())
+                                .frame(width: 70, height: 100)
+                                Spacer()
                             }
-                            .pickerStyle(WheelPickerStyle())
-                            .frame(width: 70, height: 100)
+                        } header: {
+                            Text("Set Game Time:")
                         }
                         .font(.title)
                         
-                        ColorPicker(selection: $selectedColor) {
-                            Text("Pick a color")
+                        // MARK: Colors set
+                        Section {
+                            if gameSettings.expendColorSettings {
+                                ColorPicker(selection: $playerOneTimeColor) {
+                                    Text("Player One color")
+                                }
+                                
+                                ColorPicker(selection: $playerTwoTimeColor) {
+                                    Text("Player Two color")
+                                }
+                                
+                                ColorPicker(selection: $gameTimeColor) {
+                                    Text("Game Time color")
+                                }
+                                
+                                ColorPicker(selection: $buttonsColor) {
+                                    Text("Buttons color")
+                                }
+                            }
+                        } header: {
+                            HStack {
+                                Text("Colors")
+                                    .font(.title)
+                                Spacer()
+                                Image(systemName: "arrow.down")
+                                    .rotationEffect(gameSettings.expendColorSettings ? .degrees(-180) : .degrees(0))
+                                    .onTapGesture {
+                                        withAnimation(.default) {
+                                            gameSettings.expendColorSettings.toggle()
+                                        }
+                                    }
+                            }
                         }
                         
+                        
+                        // MARK: Email
                         Button("Send feedback") {
                             sendEmail = true
                         }
@@ -84,17 +128,30 @@ struct SettingsView: View {
                     Button("Save") {
                         let gameLengthToSet = (selectedMinute * 60) + selectedsecond
                         
-                        if game.gameLenght != gameLengthToSet {
-                            game.gameLenght = gameLengthToSet
-                            game.playerOneTimer?.length = gameLengthToSet
-                            game.playerTwoTimer?.length = gameLengthToSet
+                        if game.gameLength != gameLengthToSet {
+                            game.gameLength = gameLengthToSet
+                            game.playerOneTimer.length = gameLengthToSet
+                            game.playerTwoTimer.length = gameLengthToSet
                             game.resetTimers()
                         }
                         
-                        if selectedColor != gameSettings.color {
-                            gameSettings.setColor(selectedColor)
+                        if gameSettings.playerOneTimeColor != playerOneTimeColor {
+                            gameSettings.setPlayerOneTimeColor(playerOneTimeColor)
                         }
-    
+                        
+                        if gameSettings.playerTwoTimeColor != playerTwoTimeColor {
+                            gameSettings.setPlayerTwoTimeColor(playerTwoTimeColor)
+                        }
+                        
+                        if gameSettings.gameTimeColor != gameTimeColor {
+                            gameSettings.setGameTimeColor(gameTimeColor)
+                        }
+                        
+                        if gameSettings.buttonsColor != buttonsColor {
+                            gameSettings.setButtonsColor(buttonsColor)
+                        }
+                            
+                        
                         dismiss()
                     }
                 }
@@ -106,13 +163,17 @@ struct SettingsView: View {
             SendEmailView()
         }
         .onAppear {
-            selectedColor = gameSettings.color
-            selectedMinute = game.gameLenght / 60
-            selectedsecond = game.gameLenght % 60
+            playerOneTimeColor = gameSettings.playerOneTimeColor
+            playerTwoTimeColor = gameSettings.playerTwoTimeColor
+            buttonsColor = gameSettings.buttonsColor
+            gameTimeColor = gameSettings.gameTimeColor
+            
+            selectedMinute = game.gameLength / 60
+            selectedsecond = game.gameLength % 60
         }
     }
 }
 
 #Preview {
-    SettingsView(game: Game(gameLenght: 60), gameSettings: ThemeViewModel())
+    SettingsView(game: Game(gameLength: 60), gameSettings: ThemeViewModel())
 }

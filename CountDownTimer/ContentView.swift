@@ -10,31 +10,30 @@ import SwiftUI
 struct ContentView: View {
     @State private var gameSettings = ThemeViewModel()
     @State private var game = Game(
-        gameLenght: 60,
+        gameLength: 60,
         playerOneTimer: TimerObject(),
         playerTwoTimer: TimerObject()
     )
     @State private var showSettings: Bool = false
     
+    var playerOneTimerDisplay: String {
+        game.playerOneTimer.displayTimeRemaining
+    }
+    
+    var playerTwoTimerDisplay: String {
+        game.playerTwoTimer.displayTimeRemaining
+    }
+    
     var body: some View {
-        let playerOneTimerDisplay = String(format: "%02d:%02d", 
-            game.playerOneTimer!.remainingTime / 60, 
-            game.playerOneTimer!.remainingTime % 60
-        )
-        let playerTwoTimerDisplay = String(format: "%02d:%02d", 
-            game.playerTwoTimer!.remainingTime / 60, 
-            game.playerTwoTimer!.remainingTime % 60
-        )
-        
         NavigationStack {
             ZStack {
                 Color.black.opacity(0.8)
                 
                 VStack {
                     TimerView(
-                        gameTime: $game.gameLenght,
+                        gameTime: $game.gameLength,
                         showSettings: $showSettings,
-                        colorTheme: gameSettings.color,
+                        gameSettings: gameSettings,
                         gameStatus: $game.status,
                         playerOneTimerDisplay: playerOneTimerDisplay,
                         playerTwoTimerDisplay: playerTwoTimerDisplay

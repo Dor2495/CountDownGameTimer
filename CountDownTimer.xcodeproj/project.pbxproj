@@ -27,6 +27,7 @@
 		B4BE1D102D9D663E00B06BBA /* CountDownTimer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CountDownTimer.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B4BE1D202D9D664000B06BBA /* CountDownTimerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CountDownTimerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B4BE1D2A2D9D664000B06BBA /* CountDownTimerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CountDownTimerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B4BE1D352D9D664000B06BBA /* CountDownTimer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CountDownTimer.entitlements; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -116,6 +117,7 @@
 			productName = CountDownTimer;
 			productReference = B4BE1D102D9D663E00B06BBA /* CountDownTimer.app */;
 			productType = "com.apple.product-type.application";
+			entitlementsFile = B4BE1D352D9D664000B06BBA /* CountDownTimer.entitlements */;
 		};
 		B4BE1D1F2D9D664000B06BBA /* CountDownTimerTests */ = {
 			isa = PBXNativeTarget;
